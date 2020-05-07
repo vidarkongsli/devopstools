@@ -1,0 +1,50 @@
+@username=
+@pat=
+@organization=
+@project=
+@repositoryId=
+
+# GET Commits on master
+GET https://dev.azure.com/{{organization}}/{{project}}/_apis/git/repositories/{{repositoryId}}/commits
+    ?api-version=5.1
+    &searchCriteria.$top=1
+    &searchCriteria.itemVersion.version=master
+    &searchCriteria.itemVersion.versionType=branch
+    &searchCriteria.includeWorkItems=true
+Authorization: Basic {{username}}:{{pat}}
+
+###
+
+# GET tags
+GET https://dev.azure.com/{{organization}}/{{project}}/_apis/git/repositories/{{repositoryId}}/refs
+    ?api-version=5.1
+    &filter=tags/v
+Authorization: Basic {{username}}:{{pat}}
+
+
+###
+
+# Get commits between tag and branch/commit/tag
+POST https://dev.azure.com/{{organization}}/{{project}}/_apis/git/repositories/{{repositoryId}}/commitsbatch
+    ?api-version=5.1
+Authorization: Basic {{username}}:{{pat}}
+Content-Type: application/json
+
+{
+  "itemVersion": {
+    "versionType": "tag",
+    "version": "v1.6.0"
+  },
+  "compareVersion": {
+    "versionType": "commit",
+    "version": "77f49d7ded3503057e95f382e6c443d18cc65bc0"
+  },
+  "includeWorkItems":true
+}
+
+###
+
+@wi=46122
+# Get a work item
+GET https://dev.azure.com/{{organization}}/{{project}}/_apis/wit/workItems/{{wi}}
+Authorization: Basic {{username}}:{{pat}}
