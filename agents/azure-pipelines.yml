@@ -16,6 +16,6 @@ container:
 
 steps:
 - script: |
-  mv /src/node_modules .
-  ng test --browser ChromeHeadlessNoSandbox
-  npm run build --production
+    mv /src/node_modules .
+    ng test --browser ChromeHeadlessNoSandbox
+    npm run build --production
