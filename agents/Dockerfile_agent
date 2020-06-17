@@ -5,12 +5,11 @@ RUN apk add --no-cache --virtual .pipeline-deps readline linux-pam \
   && apk del .pipeline-deps \
   && npm install -g @angular/cli --unsafe-perm
 ENV CHROME_BIN=/usr/bin/chromium-browser
-RUN useradd -ms /bin/bash theuser
 
 FROM deps as npm_ci
 WORKDIR /src
 COPY testapp/package.json .
 COPY testapp/package-lock.json .
-RUN chown theuser:theuser . && npm ci
-USER theuser
+RUN npm ci
+ENV NPM_CONFIG_PREFIX=/src/node_modules
 CMD [ "node" ]
