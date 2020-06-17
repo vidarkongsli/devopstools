@@ -11,21 +11,22 @@ pool:
 variables:
   namePrefix: spdy-ng
   dockerRegistryServiceConnection: $(namePrefix)-acr
-  azureServiceConnection: 'visualstudio-premium-vidar'
   registryName: '$(namePrefix).azurecr.io'
   repository: 'demos/$(namePrefix)'
   imageNameNoTag: $(registryName)/$(repository)
   imageName: $(imageNameNoTag):$(build.buildNumber)
+  imageNameLatest: $(imageNameNoTag):latest
 
 steps:
 - task: Bash@3
   displayName: Set version info
   inputs:
     targetType: inline
-    script: 'echo -ne "$(build.buildNumber)"
+    script: 'echo -ne "$(build.buildNumber)"'
 
-- script: docker build -t $(imageName) -t '$(imageNameNoTag):latest' -f agent/Dockerfile_agent agent
+- script: docker build -f agent/Dockerfile_agent -t $(imageName) -t $(imageNameLatest) .
   displayName: 'docker build'
+  workingDirectory: agent
 
 - task: Docker@2
   displayName: Login to ACR
