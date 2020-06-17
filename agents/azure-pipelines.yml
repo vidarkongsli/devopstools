@@ -2,6 +2,11 @@ variables:
   namePrefix: spdy-ng
   dockerRegistryServiceConnection: $(namePrefix)-acr
 
+trigger:
+  branches:
+    include:
+      - master
+
 pool:
   vmImage: 'ubuntu-16.04'
 
