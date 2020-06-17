@@ -1,0 +1,11 @@
+pool:
+  vmImage: 'ubuntu-16.04'
+
+container:
+  image: 'angularnodeagent:latest'
+  endpoint: acr_endpoint
+
+steps:
+- script: |
+  ng test --browser ChromeHeadlessNoSandbox
+  npm run build --production
