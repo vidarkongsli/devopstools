@@ -24,7 +24,7 @@ steps:
     targetType: inline
     script: 'echo -ne "$(build.buildNumber)"'
 
-- script: docker build -f agent/Dockerfile_agent -t $(imageName) -t $(imageNameLatest) .
+- script: docker build -f Dockerfile_agent -t $(imageName) -t $(imageNameLatest) .
   displayName: 'docker build'
   workingDirectory: agents
 
