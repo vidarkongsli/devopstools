@@ -12,7 +12,7 @@ pool:
 
 container:
   image: 'demo/spdy-ng:latest'
-  endpoint: $(dockerRegistryServiceConnection)
+  endpoint: '$(dockerRegistryServiceConnection)'
 
 steps:
 - script: |
