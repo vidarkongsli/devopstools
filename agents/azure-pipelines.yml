@@ -1,6 +1,3 @@
-variables:
-  namePrefix: spdy-ng
-  dockerRegistryServiceConnection: $(namePrefix)-acr
 
 trigger:
   branches:
@@ -12,7 +9,7 @@ pool:
 
 container:
   image: 'demo/spdy-ng:latest'
-  endpoint: '$(dockerRegistryServiceConnection)'
+  endpoint: spdy-ng-acr
 
 steps:
 - script: |
