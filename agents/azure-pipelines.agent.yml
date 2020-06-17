@@ -11,7 +11,7 @@ pool:
 variables:
   namePrefix: spdy-ng
   dockerRegistryServiceConnection: $(namePrefix)-acr
-  registryName: '$(namePrefix).azurecr.io'
+  registryName: 'spdyng.azurecr.io'
   repository: 'demos/$(namePrefix)'
   imageNameNoTag: $(registryName)/$(repository)
   imageName: $(imageNameNoTag):$(build.buildNumber)
@@ -24,7 +24,7 @@ steps:
     targetType: inline
     script: 'echo -ne "$(build.buildNumber)"'
 
-- script: docker build -f Dockerfile_agent -t $(imageName) -t $(imageNameLatest) -t $(imageNameNoTag) .
+- script: docker build -f Dockerfile_agent -t $(imageName) -t $(imageNameLatest) .
   displayName: 'docker build'
   workingDirectory: agents
 
