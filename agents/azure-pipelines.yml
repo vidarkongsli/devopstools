@@ -1,11 +1,16 @@
+variables:
+  namePrefix: spdy-ng
+  dockerRegistryServiceConnection: $(namePrefix)-acr
+
 pool:
   vmImage: 'ubuntu-16.04'
 
 container:
-  image: 'angularnodeagent:latest'
-  endpoint: acr_endpoint
+  image: 'demo/spdy-ng:latest'
+  endpoint: $(dockerRegistryServiceConnection)
 
 steps:
 - script: |
+  mv /src/node_modules .
   ng test --browser ChromeHeadlessNoSandbox
   npm run build --production
