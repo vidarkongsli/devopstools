@@ -8,7 +8,7 @@ pool:
   vmImage: 'ubuntu-16.04'
 
 container:
-  image: 'demo/spdy-ng:latest'
+  image: 'demos/spdy-ng:latest'
   endpoint: spdy-ng-acr
 
 steps:
