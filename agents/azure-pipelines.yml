@@ -61,8 +61,10 @@ jobs:
   - job: buildApp
     pool:
       vmImge: 'ubuntu-16.04'
+    variables:
+      image: $[join('demos/spdy-ng:',dependencies.detectDockerImage.outputs['imageDetect.hash']) ]
     container:
-      image: $[ join('demos/spdy-ng:',dependencies.detectDockerImage.outputs['imageDetect.hash']) ]
+      image: $[ variables.image ]
       endpoint: spdy-ng-acr
     steps:
       - script: |
