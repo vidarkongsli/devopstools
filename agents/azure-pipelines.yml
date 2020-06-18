@@ -29,13 +29,14 @@ jobs:
           | ConvertFrom-Json `
           | Select-Object -ExpandProperty tags
         $imageExists = $tags -Contains $hash
+        Write-host "Image exists: $imageExists"
         echo "##vso[task.setvariable variable=exists;isOutput=true]$imageExists"
       name: imageDetect    
 
   - job: buildImage
     pool:
       vmImage: 'ubuntu-16.04'
-    condition: $[ eq(dependencies.detectDockerImage.outputs['imageDetect.exists'],'True') ]
+    condition: $[ and(succeeded(),eq(dependencies.detectDockerImage.outputs['imageDetect.exists'],'True')) ]
     steps:
       - task: Docker@2
         displayName: Login to ACR
