@@ -16,7 +16,9 @@ steps:
     set
     node --version
     npm --version
-    ln -s /src/node_modules node_modules
+    npm ci
     npm run test_ci
     npm run build_ci
   workingDirectory: agents/testapp
+#ln -s /src/node_modules node_modules
+  
