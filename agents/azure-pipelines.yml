@@ -16,3 +16,4 @@ steps:
     set
     ng test --browser ChromeHeadlessNoSandbox
     npm run build --production
+  workingDirectory: agents
