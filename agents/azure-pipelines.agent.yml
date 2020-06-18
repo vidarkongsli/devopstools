@@ -28,7 +28,7 @@ steps:
   displayName: Set version info
   inputs:
     targetType: inline
-    script: cat $DOCKER_CONFIG
+    script: ls -la $DOCKER_CONFIG
 
 - script: docker build -f Dockerfile_agent -t $(imageName) -t $(imageNameLatest) .
   displayName: 'docker build'
