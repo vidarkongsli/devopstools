@@ -27,14 +27,6 @@ steps:
 - publish: $(DOCKER_CONFIG)
   artifact: Docka
 
-- pwsh: |
-    $x = Get-Content $env:DOCKER_CONFIG/config.json | ConvertFrom-Json
-    Write-host
-  displayName: Set version info
-  inputs:
-    targetType: inline
-    script: ls -la $DOCKER_CONFIG/trust && cat $DOCKER_CONFIG/config.json
-
 - script: docker build -f Dockerfile_agent -t $(imageName) -t $(imageNameLatest) .
   displayName: 'docker build'
   workingDirectory: agents
