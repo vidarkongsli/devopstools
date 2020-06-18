@@ -1,9 +1,8 @@
-FROM node:10-alpine AS deps 
+FROM node:12-alpine AS deps
 LABEL "com.azure.dev.pipelines.agent.handler.node.path"="/usr/local/bin/node"
 RUN apk add --no-cache --virtual .pipeline-deps readline linux-pam \
   && apk add bash sudo shadow chromium \
-  && apk del .pipeline-deps \
-  && npm install -g @angular/cli --unsafe-perm
+  && apk del .pipeline-deps
 ENV CHROME_BIN=/usr/bin/chromium-browser
 
 FROM deps as npm_ci
