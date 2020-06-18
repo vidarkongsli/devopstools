@@ -11,5 +11,4 @@ WORKDIR /src
 COPY testapp/package.json .
 COPY testapp/package-lock.json .
 RUN npm ci
-ENV NPM_CONFIG_PREFIX=/src/node_modules
 CMD [ "node" ]
