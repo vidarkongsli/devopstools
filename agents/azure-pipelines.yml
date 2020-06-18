@@ -13,12 +13,10 @@ container:
 
 steps:
 - script: |
-    set
-    node --version
-    npm --version
-    npm ci
+    echo "Node version: $(node --version)"
+    echo "NPM version: $(npm --version)"
+    ln -s /src/node_modules node_modules
     npm run test_ci
     npm run build_ci
   workingDirectory: agents/testapp
-#ln -s /src/node_modules node_modules
   

@@ -9,5 +9,5 @@ FROM deps as npm_ci
 WORKDIR /src
 COPY testapp/package.json .
 COPY testapp/package-lock.json .
-RUN npm ci
+RUN umask 000 && npm ci
 CMD [ "node" ]
