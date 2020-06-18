@@ -14,7 +14,9 @@ container:
 steps:
 - script: |
     set
+    node --version
+    npm --version
     ln -s /src/node_modules node_modules
-    ng test --browser ChromeHeadlessNoSandbox
+    npm run test --browser ChromeHeadlessNoSandbox
     npm run build --production
   workingDirectory: agents/testapp
