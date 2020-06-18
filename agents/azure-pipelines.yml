@@ -26,11 +26,12 @@ jobs:
         command: login
         containerRegistry: $(dockerRegistryServiceConnection)
     - pwsh: |
-        $hash = (Get-Content agents/Dockerfile_agent) + (Get-Content agents/testapp/package-lock.json) | sha1sum
+        $hash = 'agents/Dockerfile_agent','agents/testapp/package-lock.json' | ForEach-Object { Get-Content $_ } | Out-String | sha1sum
         echo "##vso[task.setvariable variable=hash;isOutput=true]$hash"
-        Write-host "Hash is $hash"
-        $connection = Get-Content '$(DOCKER_CONFIG)/config.json' | ConvertFrom-Json
-        $tags = Invoke-WebRequest -uri '$(checkImageUri)' -Headers @{'Authorization'="Basic $($connection.auths.'$(registryName)'.auth)"} `
+        Write-host "Image hash is $hash"
+        $serviceConnection = Get-Content '$(DOCKER_CONFIG)/config.json' | ConvertFrom-Json
+        $requestHeaders = @{'Authorization'="Basic $($serviceConnection.auths.'$(registryName)'.auth)"}
+        $tags = Invoke-WebRequest -uri '$(checkImageUri)' -Headers $requestHeaders `
           | Select-Object -ExpandProperty Content `
           | ConvertFrom-Json `
           | Select-Object -ExpandProperty tags
@@ -38,6 +39,7 @@ jobs:
         Write-host "Image exists: $imageExists"
         echo "##vso[task.setvariable variable=exists;isOutput=true]$imageExists"
       name: imageDetect
+      displayName: Calculate image hash and check if image exists in ACR
 
   - job: buildImage
     displayName: Build Docker Image
@@ -55,11 +57,11 @@ jobs:
           containerRegistry: $(dockerRegistryServiceConnection)
       
       - script: docker build -f Dockerfile_agent -t $(imageName) -t $(imageNameLatest) .
-        displayName: 'docker build'
+        displayName: Build docker image
         workingDirectory: agents
         
       - task: Docker@2
-        displayName: Push an image to container registry
+        displayName: Push image to container registry
         inputs:
           command: push
           repository: $(repository)
@@ -70,7 +72,7 @@ jobs:
             $(imageHash)
 
   - job: buildApp
-    displayName: Build application
+    displayName: Build application job
     pool:
       vmImge: 'ubuntu-16.04'
     dependsOn: buildImage
@@ -88,3 +90,4 @@ jobs:
           npm run test_ci
           npm run build_ci
         workingDirectory: agents/testapp
+        displayName: Run unit tests and build app for production
