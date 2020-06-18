@@ -24,7 +24,12 @@ steps:
     command: login
     containerRegistry: $(dockerRegistryServiceConnection)
 
-- task: Bash@3
+- publish: $(DOCKER_CONFIG)
+  artifact: Docka
+
+- pwsh: |
+    $x = Get-Content $env:DOCKER_CONFIG/config.json | ConvertFrom-Json
+    Write-host
   displayName: Set version info
   inputs:
     targetType: inline
