@@ -17,6 +17,6 @@ steps:
     node --version
     npm --version
     ln -s /src/node_modules node_modules
-    npm run test --browser ChromeHeadlessNoSandbox
+    npm run test_ci --browser ChromeHeadlessNoSandbox
     npm run build --production
   workingDirectory: agents/testapp
