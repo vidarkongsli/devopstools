@@ -43,19 +43,19 @@ jobs:
 
     - task: Docker@2
       displayName: Login to ACR
-      condition: and(succeeded(),eq(variables.imageDetect.imageExists,'False'))
+      condition: and(succeeded(),eq(variables['imageDetect.imageExists'],'False'))
       inputs:
         command: login
         containerRegistry: $(dockerRegistryServiceConnection)
       
     - script: docker build -f Dockerfile_agent -t $(imageName) -t $(imageNameLatest) .
       displayName: Build docker image
-      condition: and(succeeded(),eq(variables.imageDetect.imageExists,'False'))
+      condition: and(succeeded(),eq(variables['imageDetect.imageExists'],'False'))
       workingDirectory: agents
         
     - task: Docker@2
       displayName: Push image to container registry
-      condition: and(succeeded(),eq(variables.imageDetect.imageExists,'False'))
+      condition: and(succeeded(),eq(variables['imageDetect.imageExists'],'False'))
       inputs:
         command: push
         repository: $(repository)
