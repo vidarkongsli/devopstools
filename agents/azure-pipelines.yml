@@ -25,13 +25,16 @@ jobs:
       inputs:
         command: login
         containerRegistry: $(dockerRegistryServiceConnection)
+
     - pwsh: |
         $ErrorActionPreference='stop'
         $hash = ('agents/Dockerfile_agent','agents/testapp/package-lock.json' | ForEach-Object { Get-Content $_ } | Out-String | sha1sum -).Substring(0, 40) 
         echo "##vso[task.setvariable variable=hash;isOutput=true]$hash"
-        Write-host "Image hash is $hash"
+        echo "Image hash is $hash"
+        echo "Reading from $(DOCKER_CONFIG)/config.json"
         $serviceConnection = Get-Content '$(DOCKER_CONFIG)/config.json' | ConvertFrom-Json
         $requestHeaders = @{'Authorization'='Basic ' + $serviceConnection.auths.'$(registryName)'.auth}
+        echo "Calling $(checkImageUri)"
         $response = Invoke-WebRequest -uri '$(checkImageUri)' -Headers $requestHeaders
         if ($response.StatusCode -ne 200) {
           Write-Error "ACR response: " + $response.StatusCode + " for $(checkImageUri)"
@@ -41,18 +44,11 @@ jobs:
           | ConvertFrom-Json `
           | Select-Object -ExpandProperty tags
         $imageExists = $tags -Contains $hash
-        Write-host "Image exists: $imageExists"
+        echo "Image exists: $imageExists"
         echo "##vso[task.setvariable variable=imageExists;isOutput=true]$imageExists"
       name: imageDetect
       displayName: Calculate image hash and check if image exists in ACR
 
-    - task: Docker@2
-      displayName: Login to ACR
-      condition: and(succeeded(),eq(variables['imageDetect.imageExists'],'False'))
-      inputs:
-        command: login
-        containerRegistry: $(dockerRegistryServiceConnection)
-      
     - script: docker build -f Dockerfile_agent -t $(imageName) -t $(imageNameLatest) .
       displayName: Build docker image
       condition: and(succeeded(),eq(variables['imageDetect.imageExists'],'False'))
@@ -66,7 +62,7 @@ jobs:
         repository: $(repository)
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
-          $[ variables['imageDetect.hash'] ]
+          ${{ variables['imageDetect.hash'] }}
           $(build.buildNumber)
           latest
 
