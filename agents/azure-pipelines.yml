@@ -68,7 +68,7 @@ jobs:
     dependsOn: prepareDockerImage
     condition: succeeded()
     variables:
-      image: $[join(variables.repository,':',dependencies.prepareDockerImage.outputs['imageDetect.hash'])]
+      image: 'demos/spdy-ng:4d5fca7f367502b512ecbfe31f396584961bd5ce' #$[join(variables.repository,':',dependencies.prepareDockerImage.outputs['imageDetect.hash'])]
     container:
       image: $[ variables.image ]
       endpoint: spdy-ng-acr
