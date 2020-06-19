@@ -59,7 +59,7 @@ jobs:
         command: push
         repository: $(repository)
         containerRegistry: $(dockerRegistryServiceConnection)
-        tags: '${{ variables.hash }}'
+        tags: '$(hash)'
 
   - job: buildApp
     displayName: Build application job
