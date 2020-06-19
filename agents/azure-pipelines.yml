@@ -15,7 +15,7 @@ trigger:
       - master
 
 jobs:
-  - job: detectDockerImage
+  - job: prepareDockerImage
     displayName: Detect Docker image
     pool:
       vmImage: 'ubuntu-16.04'
@@ -69,10 +69,10 @@ jobs:
     displayName: Build application job
     pool:
       vmImge: 'ubuntu-16.04'
-    dependsOn: buildImage
+    dependsOn: prepareDockerImage
     condition: always()
     variables:
-      image: $[ join(variables.repository,':',dependencies.detectDockerImage.outputs['imageDetect.hash']) ]
+      image: $[ join(variables.repository,':',dependencies.prepareDockerImage.outputs['imageDetect.hash']) ]
     container:
       image: $[ variables.image ]
       endpoint: spdy-ng-acr
