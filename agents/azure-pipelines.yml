@@ -30,6 +30,7 @@ jobs:
         $ErrorActionPreference='stop'
         $hash = ('agents/Dockerfile_agent','agents/testapp/package-lock.json' | ForEach-Object { Get-Content $_ } | Out-String | sha1sum -).Substring(0, 40) 
         echo "##vso[task.setvariable variable=hash;isOutput=true]$hash"
+        echo "##vso[task.setvariable variable=hash;isOutput=false]$hash"
         echo "Image hash is $hash"
         echo "Reading from $(DOCKER_CONFIG)/config.json"
         $serviceConnection = Get-Content '$(DOCKER_CONFIG)/config.json' | ConvertFrom-Json
@@ -58,9 +59,7 @@ jobs:
         command: push
         repository: $(repository)
         containerRegistry: $(dockerRegistryServiceConnection)
-        tags: |
-          ${{ variables.hash }}
-          latest
+        tags: '${{ variables.hash }}'
 
   - job: buildApp
     displayName: Build application job
