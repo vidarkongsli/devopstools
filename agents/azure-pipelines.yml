@@ -61,9 +61,9 @@ jobs:
         repository: $(repository)
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
+          ${{ variables['imageDetect.hash'] }}
           $(build.buildNumber)
           latest
-          $(hash)
 
   - job: buildApp
     displayName: Build application job
