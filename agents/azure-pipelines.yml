@@ -70,9 +70,9 @@ jobs:
     pool:
       vmImge: 'ubuntu-16.04'
     dependsOn: prepareDockerImage
-    condition: always()
+    condition: succeeded()
     variables:
-      image: $[ join(variables.repository,':',dependencies.prepareDockerImage.outputs['imageDetect.hash']) ]
+      image: $[join(variables.repository,':',dependencies.prepareDockerImage.outputs['imageDetect.hash'])]
     container:
       image: $[ variables.image ]
       endpoint: spdy-ng-acr
