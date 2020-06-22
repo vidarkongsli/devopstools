@@ -70,7 +70,7 @@ jobs:
     variables:
       image: $[ dependencies.prepareDockerImage.outputs['imageDetect.imageName'] ]
     container:
-      image: $[ dependencies.prepareDockerImage.outputs['imageDetect.imageName'] ]
+      image: $[ variables.image ]
       endpoint: spdy-ng-acr
     steps:
       - script: |
