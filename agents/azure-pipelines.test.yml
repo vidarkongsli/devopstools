@@ -1,0 +1,23 @@
+
+variables:
+  repository: sindarin
+
+jobs:
+  - job: translateJob
+    pool:
+      vmImage: 'ubuntu-16.04'
+    steps:
+    - pwsh: |
+        echo "##vso[task.setvariable variable=friend;isOutput=true]mellon"
+      name: translate
+
+  - job: printJob
+    pool:
+      vmImge: 'ubuntu-16.04'
+    dependsOn: translateJob
+    condition: succeeded()
+    variables:
+      image: $(repository):$[ dependencies.translateJob.outputs['translate.friend'] ]
+    steps:
+      - script: |
+          echo "The word for friend is $IMAGE"
