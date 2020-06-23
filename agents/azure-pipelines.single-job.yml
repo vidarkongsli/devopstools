@@ -56,7 +56,7 @@ steps:
     echo (Get-Content ./Dockerfile)
   workingDirectory: agents
 
-- script: docker build -f Dockerfile --output $(Build.ArtifactStagingDirectory) .
+- script: DOCKER_CLI_EXPERIMENTAL=enabled docker buildx build --output $(Build.ArtifactStagingDirectory) .
   displayName: Build application
   workingDirectory: agents
 
