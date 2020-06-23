@@ -27,7 +27,7 @@ jobs:
         containerRegistry: $(dockerRegistryServiceConnection)
 
     - pwsh: |
-        $hash = (Get-Content 'agents/Dockerfile_agent','agents/testapp/package-lock.json' | Out-String | sha1sum -).Substring(0, 40) 
+        $hash = (Get-Content './Dockerfile_agent','./testapp/package-lock.json' | Out-String | sha1sum -).Substring(0, 40) 
         echo "##vso[task.setvariable variable=imageName;isOutput=true]$(repository):$hash"
         echo "##vso[task.setvariable variable=hash;isOutput=false]$hash"
         $serviceConnection = Get-Content '$(DOCKER_CONFIG)/config.json' | ConvertFrom-Json
@@ -41,6 +41,7 @@ jobs:
         echo "##vso[task.setvariable variable=imageExists;isOutput=true]$imageExists"
       name: imageDetect
       displayName: Calculate image hash and check if image exists in ACR
+      workingDirectory: agents
 
     - script: docker build -f Dockerfile_agent -t $(imageName) -t $(imageNameNoTag):$(hash) .
       displayName: Build docker image
@@ -74,10 +75,6 @@ jobs:
           npm run build_ci
         workingDirectory: agents/testapp
         displayName: Run unit tests and build app for production
-      # - task: CopyFiles@2
-      #   inputs:
-      #     contents: 'agents/testapp/dist/testapp/**'
-      #     targetFolder: $(Build.ArtifactStagingDirectory)
       - task: PublishBuildArtifacts@1
         inputs:
           pathToPublish: agents/testapp/dist/testapp
