@@ -27,22 +27,17 @@ jobs:
         containerRegistry: $(dockerRegistryServiceConnection)
 
     - pwsh: |
-        $ErrorActionPreference='stop'
-        $hash = ('agents/Dockerfile_agent','agents/testapp/package-lock.json' | ForEach-Object { Get-Content $_ } | Out-String | sha1sum -).Substring(0, 40) 
+        $hash = (Get-Content 'agents/Dockerfile_agent','agents/testapp/package-lock.json' | Out-String | sha1sum -).Substring(0, 40) 
         echo "##vso[task.setvariable variable=imageName;isOutput=true]$(repository):$hash"
         echo "##vso[task.setvariable variable=hash;isOutput=false]$hash"
-        echo "Image hash is $hash"
-        echo "Reading from $(DOCKER_CONFIG)/config.json"
         $serviceConnection = Get-Content '$(DOCKER_CONFIG)/config.json' | ConvertFrom-Json
         $requestHeaders = @{'Authorization'='Basic ' + $serviceConnection.auths.'$(registryName)'.auth}
-        echo "Calling $(checkImageUri)"
         $tags = Invoke-RestMethod -uri '$(checkImageUri)' -Headers $requestHeaders -SkipHttpErrorCheck -StatusCodeVariable statusCode
         if ($tags.errors) {
           Write-Error "ACR response: $($statusCode) for $(checkImageUri), errors $($tags.errors[0].code) $($tags.errors[0].message)"
           Exit 1
         }
         $imageExists = $tags.tags -Contains $hash
-        echo "Image exists: $imageExists"
         echo "##vso[task.setvariable variable=imageExists;isOutput=true]$imageExists"
       name: imageDetect
       displayName: Calculate image hash and check if image exists in ACR
@@ -71,13 +66,19 @@ jobs:
       image: $[ dependencies.prepareDockerImage.outputs['imageDetect.imageName'] ]
     container:
       image: $[ variables.image ]
-      endpoint: spdy-ng-acr
+      endpoint: $[ variables.dockerRegistryServiceConnection ]
     steps:
       - script: |
-          echo "Node version: $(node --version)"
-          echo "NPM version: $(npm --version)"
           ln -s /src/node_modules node_modules
           npm run test_ci
           npm run build_ci
         workingDirectory: agents/testapp
         displayName: Run unit tests and build app for production
+      - task: CopyFiles@2
+        inputs:
+          contents: 'agents/testapp/dist/testapp/**'
+          targetFolder: $(Build.ArtifactStagingDirectory)
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: $(Build.ArtifactStagingDirectory)
+          artifactName: app
