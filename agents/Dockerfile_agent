@@ -10,4 +10,4 @@ WORKDIR /src
 COPY testapp/package.json .
 COPY testapp/package-lock.json .
 RUN umask 000 && npm ci
-CMD [ "node" ]
+CMD [ "node" ] 
