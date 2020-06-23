@@ -1,7 +1,11 @@
 
-FROM agent:latest as test
+FROM demos/spdy-ng:latest as test
 WORKDIR /src
-RUN ng test --browsers ChromeHeadless
+COPY testapp .
+RUN npm run test_ci
 
 FROM test as build
-RUN npm run build --production
+RUN npm run build_ci
+
+FROM build as export
+COPY --from=build /src/dist/testapp /dist

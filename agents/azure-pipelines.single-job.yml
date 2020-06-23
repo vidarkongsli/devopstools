@@ -1,0 +1,66 @@
+
+variables:
+  registryName: 'spdyng.azurecr.io'
+  namePrefix: spdy-ng
+  dockerRegistryServiceConnection: $(namePrefix)-acr
+  repository: 'demos/$(namePrefix)'
+  imageNameNoTag: $(registryName)/$(repository)
+  imageName: $(imageNameNoTag):$(build.buildNumber)
+  imageNameLatest: $(imageNameNoTag):latest
+  checkImageUri: https://$(registryName)/v2/demos/$(namePrefix)/tags/list
+
+trigger:
+  branches:
+    include:
+      - master
+
+steps:
+- task: Docker@2
+  displayName: Login to ACR
+  inputs:
+    command: login
+    containerRegistry: $(dockerRegistryServiceConnection)
+
+- pwsh: |
+    $hash = (Get-Content 'agents/Dockerfile_agent','agents/testapp/package-lock.json' | Out-String | sha1sum -).Substring(0, 40) 
+    echo "##vso[task.setvariable variable=hash;isOutput=false]$hash"
+    $serviceConnection = Get-Content '$(DOCKER_CONFIG)/config.json' | ConvertFrom-Json
+    $requestHeaders = @{'Authorization'='Basic ' + $serviceConnection.auths.'$(registryName)'.auth}
+    $tags = Invoke-RestMethod -uri '$(checkImageUri)' -Headers $requestHeaders -SkipHttpErrorCheck -StatusCodeVariable statusCode
+    if ($tags.errors) {
+      Write-Error "ACR response: $($statusCode) for $(checkImageUri), errors $($tags.errors[0].code) $($tags.errors[0].message)"
+      Exit 1
+    }
+    $imageExists = $tags.tags -Contains $hash
+    echo "##vso[task.setvariable variable=imageExists;isOutput=false]$imageExists"
+  name: imageDetect
+  displayName: Calculate image hash and check if image exists in ACR
+
+- script: docker build -f Dockerfile_agent -t $(imageName) -t $(imageNameNoTag):$(hash) .
+  displayName: Build docker image
+  condition: and(succeeded(),eq(variables.imageExists,'False'))
+  workingDirectory: agents
+    
+- task: Docker@2
+  displayName: Push image to container registry
+  condition: and(succeeded(),eq(variables.imageExists,'False'))
+  inputs:
+    command: push
+    repository: $(repository)
+    containerRegistry: $(dockerRegistryServiceConnection)
+    tags: '$(hash)'
+
+- pwsh: |
+    $dockerFile = Get-Content ./Dockerfile
+    $dockerFile -replace '$(imageNameLatest)','$(imageNameNoTag):$(hash)' | Out-File ./Dockerfile
+    echo (Get-Content ./Dockerfile)
+  workingDirectory: agents
+
+- script: docker build -f Dockerfile --output $(Build.ArtifactStagingDirectory) .
+  displayName: Build application
+  workingDirectory: agents
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: $(Build.ArtifactStagingDirectory)
+    artifactName: app
