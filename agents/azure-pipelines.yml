@@ -66,7 +66,7 @@ jobs:
       image: $[ dependencies.prepareDockerImage.outputs['imageDetect.imageName'] ]
     container:
       image: $[ variables.image ]
-      endpoint: $(dockerRegistryServiceConnection)
+      endpoint: spdy-ng-acr
     steps:
       - script: |
           ln -s /src/node_modules node_modules
@@ -74,11 +74,11 @@ jobs:
           npm run build_ci
         workingDirectory: agents/testapp
         displayName: Run unit tests and build app for production
-      - task: CopyFiles@2
-        inputs:
-          contents: 'agents/testapp/dist/testapp/**'
-          targetFolder: $(Build.ArtifactStagingDirectory)
+      # - task: CopyFiles@2
+      #   inputs:
+      #     contents: 'agents/testapp/dist/testapp/**'
+      #     targetFolder: $(Build.ArtifactStagingDirectory)
       - task: PublishBuildArtifacts@1
         inputs:
-          pathToPublish: $(Build.ArtifactStagingDirectory)
+          pathToPublish: agents/testapp/dist/testapp
           artifactName: app
