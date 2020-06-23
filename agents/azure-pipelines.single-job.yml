@@ -52,7 +52,7 @@ steps:
 
 - pwsh: |
     $dockerFile = Get-Content ./Dockerfile
-    $dockerFile -replace '$(imageNameLatest)','$(imageNameNoTag):$(hash)' | Out-File ./Dockerfile
+    $dockerFile -replace '$(repository):latest','$(imageNameNoTag):$(hash)' | Out-File ./Dockerfile
     echo (Get-Content ./Dockerfile)
   workingDirectory: agents
 
