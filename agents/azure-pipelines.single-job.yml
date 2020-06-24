@@ -8,6 +8,7 @@ variables:
   imageName: $(imageNameNoTag):$(build.buildNumber)
   imageNameLatest: $(imageNameNoTag):latest
   checkImageUri: https://$(registryName)/v2/demos/$(namePrefix)/tags/list
+  yearMonth: $[ format('{0:yyyy-MM}', pipeline.startTime) ]
 
 trigger:
   branches:
@@ -42,7 +43,7 @@ steps:
   displayName: Calculate image hash and check if image exists in ACR
   workingDirectory: agents
 
-- script: docker build -f Dockerfile_agent -t $(imageName) -t $(imageNameNoTag):$(hash) -t $(date +'%Y-%m') .
+- script: docker build -f Dockerfile_agent -t $(imageName) -t $(imageNameNoTag):$(hash) -t $(yearMonth) .
   displayName: Build docker image
   condition: and(succeeded(),eq(variables.imageExists,'False'))
   workingDirectory: agents
@@ -54,7 +55,9 @@ steps:
     command: push
     repository: $(repository)
     containerRegistry: $(dockerRegistryServiceConnection)
-    tags: '$(hash)'
+    tags: |
+      '$(hash)'
+      '$(yearMonth)'
 
 - pwsh: |
     $dockerFile = Get-Content ./Dockerfile
