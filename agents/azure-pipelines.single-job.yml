@@ -8,7 +8,7 @@ variables:
   imageName: $(imageNameNoTag):$(build.buildNumber)
   imageNameLatest: $(imageNameNoTag):latest
   checkImageUri: https://$(registryName)/v2/demos/$(namePrefix)/tags/list
-  yearMonth: $[ format('{0:yyyy-MM}', pipeline.startTime) ]
+  yearMonth: $[ format('{0:yyyyMM}', pipeline.startTime) ]
 
 trigger:
   branches:
