@@ -4,7 +4,7 @@ RUN apk add --no-cache --virtual .pipeline-deps readline linux-pam \
   && apk add bash sudo shadow chromium \
   && apk del .pipeline-deps
 ENV CHROME_BIN=/usr/bin/chromium-browser
- 
+  
 FROM deps as npm_ci
 WORKDIR /src
 COPY testapp/package.json .
