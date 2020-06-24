@@ -27,6 +27,7 @@ steps:
 - pwsh: |
     $hash = (Get-Content './Dockerfile_agent','./testapp/package-lock.json' | Out-String | sha1sum -).Substring(0, 40) 
     echo "##vso[task.setvariable variable=hash;isOutput=false]$hash"
+    echo "Hash is $hash"
     $serviceConnection = Get-Content '$(DOCKER_CONFIG)/config.json' | ConvertFrom-Json
     $requestHeaders = @{'Authorization'='Basic ' + $serviceConnection.auths.'$(registryName)'.auth}
     $tags = Invoke-RestMethod -uri '$(checkImageUri)' -Headers $requestHeaders -SkipHttpErrorCheck -StatusCodeVariable statusCode
@@ -36,6 +37,7 @@ steps:
     }
     $imageExists = $tags.tags -Contains $hash
     echo "##vso[task.setvariable variable=imageExists;isOutput=false]$imageExists"
+    echo "Image exists: $imageExists"
   name: imageDetect
   displayName: Calculate image hash and check if image exists in ACR
   workingDirectory: agents
