@@ -61,8 +61,8 @@ jobs:
         repository: $(repository)
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
-          '$(hash)'
-          '$(yearMonth)'
+          $(hash)
+          $(yearMonth)
 
   - job: buildApp
     displayName: Build application job

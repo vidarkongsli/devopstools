@@ -60,8 +60,8 @@ steps:
     repository: $(repository)
     containerRegistry: $(dockerRegistryServiceConnection)
     tags: |
-      '$(hash)'
-      '$(yearMonth)'
+      $(hash)
+      $(yearMonth)
 
 - pwsh: |
     $dockerFile = Get-Content ./Dockerfile
