@@ -35,6 +35,10 @@ jobs:
         $requestHeaders = @{'Authorization'='Basic ' + $serviceConnection.auths.'$(registryName)'.auth}
         $tags = Invoke-RestMethod -uri '$(checkImageUri)' -Headers $requestHeaders -SkipHttpErrorCheck -StatusCodeVariable statusCode
         if ($tags.errors) {
+          if ($statusCode -eq 404) {
+            echo "##vso[task.setvariable variable=imageExists;isOutput=false]False"
+            Exit 0
+          }
           Write-Error "ACR response: $($statusCode) for $(checkImageUri), errors $($tags.errors[0].code) $($tags.errors[0].message)"
           Exit 1
         }
