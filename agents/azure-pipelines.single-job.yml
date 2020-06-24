@@ -47,7 +47,7 @@ steps:
   displayName: Calculate image hash and check if image exists in ACR
   workingDirectory: agents
 
-- script: docker build -f Dockerfile_agent -t $(imageName) -t $(imageNameNoTag):$(hash) -t $(yearMonth) .
+- script: docker build -f Dockerfile_agent -t $(imageName) -t $(imageNameNoTag):$(hash) -t $(imageNameNoTag):$(yearMonth) .
   displayName: Build docker image
   condition: and(succeeded(),eq(variables.imageExists,'False'))
   workingDirectory: agents
