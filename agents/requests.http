@@ -1,0 +1,19 @@
+
+@registryName=spdyng.azurecr.io
+@repository=demos/spdy-ng
+
+@username=spdyng
+@password=qWXsf4PPhegg6=C4R7wH8f2nDFdiCPVJ
+@tag=519928be2ae5e697c823c520bb3b4fd2da8a4c38
+
+GET https://{{registryName}}/v2/{{repository}}/tags/list
+Authorization: Basic {{username}}:{{password}}
+
+###
+
+GET https://{{registryName}}/v2/{{repository}}/manifests/{{tag}}
+Authorization: Basic {{username}}:{{password}}
+
+###
+DELETE https://{{registryName}}/v2/{{repository}}/manifests/{{digest}}
+Authorization: Basic {{username}}:{{password}}
