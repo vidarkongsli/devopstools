@@ -19,14 +19,14 @@ steps:
   displayName: Run tests
   inputs:
     command: custom
-    customCommand: test_ci 
+    customCommand: run test_ci
     workingDir: agents/testapp
 
 - task: npm@1
   displayName: Build app
   inputs:
     command: custom
-    customCommand: build_ci 
+    customCommand: run build_ci
     workingDir: agents/testapp
 
 - task: PublishBuildArtifacts@1
