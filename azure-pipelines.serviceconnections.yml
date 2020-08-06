@@ -1,0 +1,11 @@
+
+variables:
+  connName: jenerisk
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- pwsh: |
+    dir env:
+  name: viewEnv
