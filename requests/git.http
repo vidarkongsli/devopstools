@@ -1,8 +1,26 @@
-@username=
-@pat=
-@organization=
-@project=
-@repositoryId=
+@username=vidar.kongsli@felleskjopet.no
+@pat=r5fwdcfmjnbwi6usc5ct5g46slrz2pzgd2vkhjobnsi2leqlxjeq
+@organization=felleskjopet
+@project=felleskjopet.no
+@repositoryId=identity
+
+# 
+
+GET https://dev.azure.com/{{organization}}/{{project}}/_apis/build/builds
+    ?api-version=5.1
+    &statusFilter=completed
+    &resultFilter=succeeded
+    &queryOrder=finishTimeDescending
+    &minTime=2020-06-22T00:00:00Z
+Authorization: Basic {{username}}:{{pat}}
+
+###
+
+GET https://dev.azure.com/felleskjopet/e9895542-cc2b-441c-8706-cd727f539091/_apis/build/builds/45668/Timeline
+Authorization: Basic {{username}}:{{pat}}
+
+
+###
 
 # GET Commits on master
 GET https://dev.azure.com/{{organization}}/{{project}}/_apis/git/repositories/{{repositoryId}}/commits
@@ -33,11 +51,11 @@ Content-Type: application/json
 {
   "itemVersion": {
     "versionType": "tag",
-    "version": "v1.6.0"
+    "version": "v1.13.1"
   },
   "compareVersion": {
-    "versionType": "commit",
-    "version": "77f49d7ded3503057e95f382e6c443d18cc65bc0"
+    "versionType": "branch",
+    "version": "master"
   },
   "includeWorkItems":true
 }
@@ -48,3 +66,22 @@ Content-Type: application/json
 # Get a work item
 GET https://dev.azure.com/{{organization}}/{{project}}/_apis/wit/workItems/{{wi}}
 Authorization: Basic {{username}}:{{pat}}
+
+### 
+
+#Get work items batch
+POST https://dev.azure.com/{{organization}}/{{project}}/_apis/wit/workitemsbatch?api-version=6.0
+Authorization: Basic {{username}}:{{pat}}
+Content-Type: application/json
+
+{
+  "ids": [
+    46122
+  ],
+  "fields": [
+    "System.Id",
+    "System.Title",
+    "System.WorkItemType",
+    "Microsoft.VSTS.Scheduling.RemainingWork"
+  ]
+}
